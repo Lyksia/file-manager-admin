@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import { File } from '@/types/api';
-import { Download, Trash2, FileIcon, ImageIcon } from 'lucide-react';
-import { API_CONFIG } from '@/config/api';
-import { useFileDelete } from '../hooks/use-file-delete';
+import { File } from "@/types/api";
+import { Download, Trash2, FileIcon, ImageIcon } from "lucide-react";
+import { useFileDelete } from "../hooks/use-file-delete";
 
 interface FileGridProps {
   files: File[];
@@ -19,17 +18,14 @@ export function FileGrid({ files }: FileGridProps) {
   };
 
   const handleDownload = (fileId: string, fileName: string) => {
-    const url = `${API_CONFIG.baseUrl}/api/files/${fileId}/download`;
-    const link = document.createElement('a');
+    // Use Next.js Route Handler (secure, no API key exposed)
+    const url = `/api/files/${fileId}/download`;
+    const link = document.createElement("a");
     link.href = url;
     link.download = fileName;
-    link.target = '_blank';
-    // Add API key header via fetch and blob
-    fetch(url, {
-      headers: {
-        'X-API-Key': API_CONFIG.adminApiKey,
-      },
-    })
+    link.target = "_blank";
+
+    fetch(url)
       .then((res) => res.blob())
       .then((blob) => {
         const blobUrl = window.URL.createObjectURL(blob);
@@ -42,20 +38,20 @@ export function FileGrid({ files }: FileGridProps) {
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
-  const isImage = (mimeType: string) => mimeType.startsWith('image/');
+  const isImage = (mimeType: string) => mimeType.startsWith("image/");
 
   if (files.length === 0) {
     return (
@@ -77,11 +73,11 @@ export function FileGrid({ files }: FileGridProps) {
           <div className="aspect-square bg-gray-100 relative">
             {isImage(file.mimeType) && file.thumbnailPath ? (
               <img
-                src={`${API_CONFIG.baseUrl}/api/files/${file.id}/thumbnail`}
+                src={`/api/files/${file.id}/thumbnail`}
                 alt={file.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
+                  (e.target as HTMLImageElement).style.display = "none";
                 }}
               />
             ) : (
@@ -116,7 +112,10 @@ export function FileGrid({ files }: FileGridProps) {
 
           {/* Info */}
           <div className="p-3">
-            <h3 className="font-medium text-sm text-gray-900 truncate mb-1" title={file.name}>
+            <h3
+              className="font-medium text-sm text-gray-900 truncate mb-1"
+              title={file.name}
+            >
               {file.name}
             </h3>
             <div className="flex items-center justify-between text-xs text-gray-500">

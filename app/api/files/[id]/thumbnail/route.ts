@@ -1,15 +1,16 @@
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 
 const API_URL = process.env.API_URL!;
 const API_KEY = process.env.API_KEY!;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const response = await fetch(`${API_URL}/api/files/${params.id}/thumbnail`, {
+  const { id } = await params;
+  const response = await fetch(`${API_URL}/api/files/${id}/thumbnail`, {
     headers: {
-      'X-API-Key': API_KEY,
+      "X-API-Key": API_KEY,
     },
   });
 
@@ -20,10 +21,10 @@ export async function GET(
   }
 
   // Get the headers from the backend response
-  const contentType = response.headers.get('content-type');
+  const contentType = response.headers.get("content-type");
 
   const headers: Record<string, string> = {};
-  if (contentType) headers['content-type'] = contentType;
+  if (contentType) headers["content-type"] = contentType;
 
   return new Response(response.body, {
     status: 200,

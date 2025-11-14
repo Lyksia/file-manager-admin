@@ -1,5 +1,5 @@
-import { apiClient } from '@/lib/api-client';
-import type { ApiKey } from '@/types/api';
+import { apiClient } from "@/lib/api-client";
+import type { ApiKey } from "@/types/api";
 
 interface CreateApiKeyResponse {
   message: string;
@@ -9,18 +9,22 @@ interface CreateApiKeyResponse {
 
 export const apiKeyApi = {
   async list(): Promise<ApiKey[]> {
-    return apiClient.get('/api/keys');
+    return apiClient.get("/keys");
   },
 
-  async create(data: { name: string; rateLimit?: number; expiresAt?: string }): Promise<CreateApiKeyResponse> {
-    return apiClient.post('/api/keys', data);
+  async create(data: {
+    name: string;
+    rateLimit?: number;
+    expiresAt?: string;
+  }): Promise<CreateApiKeyResponse> {
+    return apiClient.post("/keys", data);
   },
 
   async delete(id: string): Promise<{ success: boolean }> {
-    return apiClient.delete(`/api/keys/${id}`);
+    return apiClient.delete(`/keys/${id}`);
   },
 
   async stats(): Promise<{ total: number; active: number; expired: number }> {
-    return apiClient.get('/api/keys/stats');
+    return apiClient.get("/keys/stats");
   },
 };

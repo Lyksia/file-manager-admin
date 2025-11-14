@@ -1,13 +1,15 @@
-import { API_CONFIG } from "@/config/api";
 import type { ApiError } from "@/types/api";
 
+/**
+ * API Client qui utilise les Route Handlers Next.js pour sécuriser les appels
+ * Les appels passent par /api/* qui proxifie vers le backend avec la clé API sécurisée côté serveur
+ */
 class ApiClient {
   private baseUrl: string;
-  private apiKey: string;
 
-  constructor(baseUrl: string, apiKey: string) {
-    this.baseUrl = baseUrl;
-    this.apiKey = apiKey;
+  constructor() {
+    // Utilise les routes Next.js locales (/api/*)
+    this.baseUrl = "/api";
   }
 
   private async request<T>(
@@ -16,9 +18,7 @@ class ApiClient {
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
-    const headers: Record<string, string> = {
-      "X-API-Key": this.apiKey,
-    };
+    const headers: Record<string, string> = {};
 
     // Add existing headers if provided
     if (options.headers) {
@@ -66,12 +66,16 @@ class ApiClient {
     });
   }
 
+  async put<T>(endpoint: string, data: unknown): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
   async delete<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: "DELETE" });
   }
 }
 
-export const apiClient = new ApiClient(
-  API_CONFIG.baseUrl,
-  API_CONFIG.adminApiKey,
-);
+export const apiClient = new ApiClient();
